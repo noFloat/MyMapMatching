@@ -1,0 +1,9 @@
+MyMapMatching/settings.py
+.idea/*
+Data/*
+data-1/*
+Test/*
+Train/*
+user_data/*
+beijing_china.osm.data/*
+map_data/

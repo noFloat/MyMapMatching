@@ -1,0 +1,205 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>ORP</title>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css"/>
+    <script src="http://webapi.amap.com/maps?v=1.3&key=6453161a20a7c6fdebe3b56d012d0223"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+</head>
+<body>
+
+    <div>
+        <div id="container1" style="width:500px; height:700px;float:left;"></div>
+        <div id="container2" style="width:500px; height:700px;margin-left:550px;"></div>
+    </div>
+
+    <div>
+        <div id="container3" style="width:500px; height:700px;float:left;"></div>
+        <div id="container4" style="width:500px; height:700px;margin-left:550px;"></div>
+    </div>
+
+<script>
+    var color_list = ["#FF00FF" , "#FF0000" , "#FF4500" , "#F08080" , "#FF7F50",
+        "#FF8C00" , "#FFA500" , "#FF00FF" , "#FF00FF" , "#FF00FF" , "#FF00FF" , "#FF00FF" ,
+        "#FF00FF" , "#FF00FF" , "#FF00FF" , "#FF00FF" , "#FF00FF"]
+    
+    draw_set_json = {{draw_set_2 | safe}}
+    draw_set_json_4 = {{draw_set_4 | safe}} //熟悉的路线
+
+    //alert(draw_set_json)
+    map = new AMap.Map('container1', {
+        resizeEnable: true,
+        center: [116.397428, 39.90923],
+        zoom: 13
+    });
+
+    map4 = new AMap.Map('container4', {
+        resizeEnable: true,
+        center: [116.397428, 39.90923],
+        zoom: 13
+    });
+
+    for(var l = 0 ; l < draw_set_json_4.length ; l++){
+        var line_4 = new Array();
+        var start_node_4 = new Array();
+        var end_node_4 = new Array();
+        start_node_4.push(draw_set_json_4[l]["start_node_lon"])
+        start_node_4.push(draw_set_json_4[l]["start_node_lat"])
+        end_node_4.push(draw_set_json_4[l]["end_node_lon"])
+        end_node_4.push(draw_set_json_4[l]["end_node_lat"])
+        line_4.push(start_node_4);
+        line_4.push(end_node_4);
+
+        var polyline4 = new AMap.Polyline({
+            path: line_4,          //设置线覆盖物路径
+            strokeColor: "#F08080",//"#FF00FF", //线颜色
+            strokeOpacity: 1,       //线透明度
+            strokeWeight: 5,        //线宽
+            strokeStyle: "solid",   //线样式
+            strokeDasharray: [10, 5] //补充线样式
+        });
+        polyline4.setMap(map4);
+    }
+
+    for(var i = 0 ; i < draw_set_json.length ; i++){
+        var line = new Array();
+        var start_node = new Array();
+        var end_node = new Array();
+        start_node.push(draw_set_json[i]["start_node_lon"])
+        start_node.push(draw_set_json[i]["start_node_lat"])
+        end_node.push(draw_set_json[i]["end_node_lon"])
+        end_node.push(draw_set_json[i]["end_node_lat"])
+        line.push(start_node);
+        line.push(end_node);
+
+
+
+        //alert(typeof(line))
+        var polyline = new AMap.Polyline({
+                path: line,          //设置线覆盖物路径
+                strokeColor: "#FF00FF",//"#FF00FF", //线颜色
+                strokeOpacity: 1,       //线透明度
+                strokeWeight: 5,        //线宽
+                strokeStyle: "solid",   //线样式
+                strokeDasharray: [10, 5] //补充线样式
+            });
+        polyline.setMap(map);
+
+
+        // 实例化点标记
+
+        
+        if(i == 0)
+        {
+            marker = new AMap.Marker({
+                icon: "http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+                position: start_node
+            });
+            marker.setContent("起点");
+        }
+        else if( i == draw_set_json.length - 1){
+            marker = new AMap.Marker({
+                icon: "http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+                position: end_node
+            });
+            marker.setContent("终点");
+        }
+        else{
+            marker = new AMap.Marker({
+                icon: "http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+                position: start_node
+            });
+            marker.setContent(i.toString());
+        }
+        marker.setMap(map);
+    }
+</script>
+<script>
+
+    draw_set_json_2 = {{draw_set | safe}}
+
+
+    map2 = new AMap.Map('container2', {
+        resizeEnable: true,
+        center: [116.397428, 39.90923],
+        zoom: 13
+    });
+    for(var j = 0; j < draw_set_json_2.length ; j++){
+        var line = new Array();
+        var start_node = new Array();
+        var end_node = new Array();
+        start_node.push(draw_set_json_2[j]["start_node_lon"])
+        start_node.push(draw_set_json_2[j]["start_node_lat"])
+        end_node.push(draw_set_json_2[j]["end_node_lon"])
+        end_node.push(draw_set_json_2[j]["end_node_lat"])
+        line.push(start_node);
+        line.push(end_node);
+        //alert(typeof(line))
+        var polyline2 = new AMap.Polyline({
+                path: line,          //设置线覆盖物路径
+                strokeColor: "#FF4500", //线颜色
+                strokeOpacity: 1,       //线透明度
+                strokeWeight: 5,        //线宽
+                strokeStyle: "solid",   //线样式
+                strokeDasharray: [10, 5] //补充线样式
+            });
+        polyline2.setMap(map2);
+
+        
+        if(j == 0)
+        {
+            marker2 = new AMap.Marker({
+                icon: "http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+                position: start_node
+            });
+            marker2.setContent("起点");
+        }
+        else if( j == draw_set_json_2.length - 1){
+            marker2 = new AMap.Marker({
+                icon: "http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+                position: end_node
+            });
+            marker2.setContent("终点");
+        }
+        else{
+            marker2 = new AMap.Marker({
+                icon: "http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+                position: start_node
+            });
+            marker2.setContent(j.toString());
+        }
+        marker2.setMap(map2);
+
+    }
+</script>
+
+<script type="text/javascript">
+
+    draw_set_json_3 = {{draw_set_3 | safe}}
+
+    var map_3 = new AMap.Map("container3", {
+        resizeEnable: true,
+        center: [116.397428, 39.90923],//地图中心点
+        zoom: 13 //地图显示的缩放级别
+    });
+
+    for(var i = 0 ; i < draw_set_json_3.length ; i++){
+        var line = new Array();
+
+        line.push(draw_set_json_3[i]["node_lon"]);
+        line.push(draw_set_json_3[i]["node_lat"]);
+
+        var marker = new AMap.Marker({ //添加自定义点标记
+            map: map_3,
+            position: line, //基点位置
+            offset: new AMap.Pixel(-17, -42), //相对于基点的偏移位置
+            draggable: false  //是否可拖动
+        });
+    }
+
+</script>
+</body>
+</html>

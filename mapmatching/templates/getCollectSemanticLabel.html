@@ -1,0 +1,337 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>可拖拽的路线规划</title>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css"/>
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=6453161a20a7c6fdebe3b56d012d0223"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    {% load static %}
+    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'bootstrap/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet">
+</head>
+<body>
+
+    <div class="row" style="width:100%;">
+        <nav class="navbar navbar-inverse navbar-fixed-top" style="width:100%">
+          <div class="container">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="#">Paper Experiment Data Collection</a>
+            </div>
+          </div>
+        </nav>
+    </div>
+    <div class="row" style="height:80%; margin-top: 50px;">
+      <div class="col-md-6" style="height:100%;">
+            <div id="container2" style="width:100%; height:100%;">
+            </div>
+      </div>
+      <div class="col-md-6">
+            <div class="jumbotron">
+                <div class="container">
+                    <h1>Thanks!</h1>
+                    <h5>点击发送就可以保存下来辣~ </h5>
+                </div>
+            </div>
+            <div class="input-group" style="width:50%;float:right">
+              <span class="input-group-addon" id="basic-addon1">上次访问的类型</span>
+              <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon1" disabled="disabled" value='1' id="last_label">
+            </div>
+            <div class="input-group" style="width:50%;">
+              <span class="input-group-addon" id="basic-addon1">ID</span>
+              <input type="text" class="form-control" placeholder="输一个用户id" aria-describedby="basic-addon1" id = "username" value='1' onchange='getNew()'>
+            </div>
+            <div class="input-group" style="width:50%;float:right">
+              <span class="input-group-addon" id="basic-addon1">上次离开的时间</span>
+              <input type="text" class="form-control" placeholder="" aria-describedby="basic-addon1" disabled="disabled" id="last_departure">
+            </div>
+            <div class="input-group" style="width:50%;">
+                <span class="input-group-addon" id="basic-addon1">到达时间</span>
+                <div class="input-append date form_datetime" data-date="2012-12-21T15:25:00Z" style="height:100%">
+                    <input size="16" type="text" value="" readonly style="width:100%;height:100%" id="arrive">
+                    <span class="add-on"><i class="icon-remove"></i></span>
+                    <span class="add-on"><i class="icon-th"></i></span>
+                </div>
+            </div>
+            <div class="input-group" style="width:50%;">
+                <span class="input-group-addon" id="basic-addon1">离开时间</span>
+                <div class="input-append date form_datetime" data-date="2012-12-21T15:25:00Z" style="height:100%">
+                    <input size="16" type="text" value="" readonly style="width:100%;height:100%" id="departure">
+                    <span class="add-on"><i class="icon-remove"></i></span>
+                    <span class="add-on"><i class="icon-th"></i></span>
+                </div>
+            </div>
+            <div class="input-group" style="width:50%;">
+              <span class="input-group-addon" id="basic-addon1">Loaction</span>
+              <input type="text" class="form-control" placeholder="坐标点，在地图上点就行" aria-describedby="basic-addon1" id = "location">
+            </div>
+            <div class="input-group" style="width:50%;">
+              <span class="input-group-addon" id="basic-addon1">Label</span>
+              <div class="btn-group" style="width:100%;">
+                  <button type="button" class="btn btn-info" style="width:90%;" disabled="disabled" id="label">Home</button>
+                  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width:10%;">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu" style="width:100%;">
+                    <li><a href="#" onclick="aClick(this)">Home</a></li>
+                    <li><a href="#" onclick="aClick(this)">Work</a></li>
+                    <li><a href="#" onclick="aClick(this)">School</a></li>
+                    <li><a href="#" onclick="aClick(this)">Restaurant</a></li>
+                    <li><a href="#" onclick="aClick(this)">Shopping</a></li>
+                    <li><a href="#" onclick="aClick(this)">Friend's Home</a></li>
+                    <li><a href="#" onclick="aClick(this)">Others</a></li>
+                  </ul>
+                </div>
+            </div>
+            <div style="width:50%;margin-top: 10px; margin-bottom:60px;">
+                <button type="button" class="btn btn-danger" onclick="findPOI(7)" style="float:left;">查找周围的POI</button>
+                <button type="button" class="btn btn-success" onclick="saveData()" style="float:right;">发送您的轨迹</button>
+            </div>
+            <div style="margin-top: 10px;">
+                <div class="input-group" style="width:50%;">
+                  <span class="input-group-addon" id="basic-addon1">餐饮服务</span>
+                  <input type="text" class="form-control" placeholder="餐饮服务" aria-describedby="basic-addon1" id = "lab0">
+                </div>
+                <div class="input-group" style="width:50%;">
+                  <span class="input-group-addon" id="basic-addon1">购物服务</span>
+                  <input type="text" class="form-control" placeholder="购物服务" aria-describedby="basic-addon1" id = "lab1">
+                </div>
+                <div class="input-group" style="width:50%;">
+                  <span class="input-group-addon" id="basic-addon1">生活服务</span>
+                  <input type="text" class="form-control" placeholder="生活服务" aria-describedby="basic-addon1" id = "lab2">
+                </div>
+                <div class="input-group" style="width:50%;">
+                  <span class="input-group-addon" id="basic-addon1">学校</span>
+                  <input type="text" class="form-control" placeholder="学校" aria-describedby="basic-addon1" id = "lab3">
+                </div>
+                <div class="input-group" style="width:50%;">
+                  <span class="input-group-addon" id="basic-addon1">工业园区</span>
+                  <input type="text" class="form-control" placeholder="工业园区" aria-describedby="basic-addon1" id = "lab4">
+                </div>
+                <div class="input-group" style="width:50%;">
+                  <span class="input-group-addon" id="basic-addon1">公司企业</span>
+                  <input type="text" class="form-control" placeholder="公司企业" aria-describedby="basic-addon1" id = "lab5">
+                </div>
+                <div class="input-group" style="width:50%;">
+                  <span class="input-group-addon" id="basic-addon1">住宅区</span>
+                  <input type="text" class="form-control" placeholder="住宅区" aria-describedby="basic-addon1" id = "lab6">
+                </div>
+            </div>
+      </div>
+    </div>
+
+</body>
+
+<script type="text/javascript">
+    var map, marker, marker2;
+    //基本地图加载
+    marker, map = new AMap.Map("container2", {
+        resizeEnable: true,
+        zoom: 13
+    });
+    //为地图注册click事件获取鼠标点击出的经纬度坐标
+    var clickEventListener = map.on('click', function(e) {
+        document.getElementById("location").value = e.lnglat.getLng() + ',' + e.lnglat.getLat();
+        if(marker){
+            marker.setMap(null);
+            marker = null;
+        }
+        addMarker(e.lnglat.getLng(), e.lnglat.getLat());
+    });
+
+    // 实例化点标记
+    function addMarker(lng,lat) {
+        marker = new AMap.Marker({
+            icon: "http://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+            position: [lng, lat]
+        });
+        marker.setMap(map);
+    }
+
+
+</script>
+<script type="text/javascript">
+    var init_data = {{init | safe}}
+    if(init_data.info == "success"){
+        marker2 = new AMap.Marker({
+                icon: "http://webapi.amap.com/theme/v1.3/markers/n/mark_r.png",
+                position: [init_data.lon, init_data.lat]
+            });
+        marker2.setMap(map);
+        marker2.setLabel({//label默认蓝框白底左上角显示，样式className为：amap-marker-label
+            offset: new AMap.Pixel(20, 20),//修改label相对于maker的位置
+            content: "上次访问的地点"
+        });
+        $("#last_label").val(init_data.label)
+        $("#last_departure").val(init_data.departure)
+    }
+    else{
+        $("#last_label").val("无先前数据")
+        $("#last_departure").val("无先前数据")
+    }
+
+
+
+</script>
+
+<script type="text/javascript">
+    var type_list = ['餐饮服务','购物服务','生活服务','学校|培训机构|驾校','楼宇|产业园区','公司企业','住宅区']
+    function findPOI(j)
+    {
+        if(j == -1)
+            return ;
+
+        AMap.service(["AMap.PlaceSearch"], function() {
+            var poiObjList = []
+            var placeSearch = new AMap.PlaceSearch({ //构造地点查询类
+                pageSize: 50,
+                pageIndex: 1,
+                city: "028", //城市
+            });
+
+            
+            placeSearch.setType(type_list[j])
+            var gps = $('#location').val()
+            var lon = gps.split(",")[0];
+            var lat = gps.split(",")[1];
+            var cpoint = [lon, lat]; //中心点坐标
+            placeSearch.searchNearBy('', cpoint, 200, function(status, result) {
+                if(status != 'no_data')
+                {
+                    
+                    console.log("#lab"+ j);
+                    $("#lab"+ j.toString()).val(result['poiList'].count);
+                    findPOI(j - 1)
+                    //console.log(poiObjList)
+                }
+                else{
+                    console.log("#lab"+ j);
+                    $("#lab"+ j.toString()).val(0);
+                    findPOI(j - 1)
+                }
+                //alert(result['poiList'].pois[0].type);
+                //alert(result['poiList'].pageIndex)
+                //alert(result['poiList'].pois.length)
+            });
+
+
+        });
+        
+    };
+
+</script>
+<script type="text/javascript">
+
+    $(".form_datetime").datetimepicker({
+        format: "yyyy-mm-dd hh:ii",
+        showMeridian: true,
+        autoclose: true,
+        todayBtn: true,
+        startDate: '2017-03-01T00:00Z'
+    });
+
+    function aClick(a){
+        a_value = a.innerHTML
+        $('#label').html(a_value)
+    }
+
+</script>
+
+<!-- Ajax更新user的最新信息 -->
+<script type="text/javascript">
+function saveData(){
+    flag = 0
+    information = {}
+    information.user_id = $('#username').val()
+    information.arrive = $('#arrive').val()
+    information.departure = $('#departure').val()
+    information.location = $('#location').val()
+    information.label = $('#label').html()
+    information.poi = []
+    for(i = 0; i < type_list.length; i++){
+        information.poi.push($('#lab'+i).val())
+    }
+    flag = 1
+
+    if(flag == 1){
+        $.ajax({
+                async: false,
+                type:"POST",
+                url:"http://localhost:8000/mapmatching/getSaveSemanticLabel/",
+                contentType:"application/json; charset=utf-8",
+                data: JSON.stringify(information),
+                dataType: "json",
+                success: function (message) {
+                   //alert(message)
+                   alert("success");  
+
+                },
+                error: function (message) {
+                   alert("error");  
+
+                }
+        });
+    }
+}
+
+</script>
+
+<!--查询当前用户最近的数据 -->
+<script type="text/javascript">
+function getNew(){
+    var user_id = $('#username').val()
+    if(user_id != ""){
+        $.ajax({
+                async: false,
+                type:"GET",
+                url:"http://localhost:8000/mapmatching/getUserNewLocation?user_id=" + user_id,
+                success: function (message) {
+                   if(message.info == 'success'){
+                        console.log(1)
+                        $("#last_label").val(message.label)
+                        $("#last_departure").val(message.departure)
+                        if(marker2){
+                            marker2.setMap(null);
+                            marker2 = null;
+                        }
+                        marker2 = new AMap.Marker({
+                                icon: "http://webapi.amap.com/theme/v1.3/markers/n/mark_r.png",
+                                position: [message.lon, message.lat]
+                            });
+                        marker2.setMap(map);
+                        marker2.setLabel({//label默认蓝框白底左上角显示，样式className为：amap-marker-label
+                            offset: new AMap.Pixel(20, 20),//修改label相对于maker的位置
+                            content: "上次访问的地点"
+                        });
+
+                   }
+                   else{
+                        $("#last_label").val("无先前数据")
+                        $("#last_departure").val("无先前数据")
+                   }
+
+                },
+                error: function (message) {
+                   //alert("error");  
+
+                }
+        });
+    }
+}
+
+
+</script>
+
+
+
+
+
+
+
+</html>
