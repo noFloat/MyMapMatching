@@ -263,7 +263,7 @@ function saveData(){
         $.ajax({
                 async: false,
                 type:"POST",
-                url:"http://localhost:8000/mapmatching/getSaveSemanticLabel/",
+                url:"./mapmatching/getSaveSemanticLabel/",
                 contentType:"application/json; charset=utf-8",
                 data: JSON.stringify(information),
                 dataType: "json",
