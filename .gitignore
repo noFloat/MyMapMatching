@@ -7,3 +7,4 @@ Train/*
 user_data/*
 beijing_china.osm.data/*
 map_data/
+__pycache__/*
